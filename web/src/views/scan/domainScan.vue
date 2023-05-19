@@ -1,0 +1,3 @@
+<template>
+domainscan
+</template>
