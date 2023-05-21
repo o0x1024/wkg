@@ -87,7 +87,7 @@ func GetTaskList(c *gin.Context) {
 func GetTask(c *gin.Context) {
 	task, ok := taskService.GetTask()
 	if !ok {
-		zap.S().Errorf("no task")
+		// zap.S().Errorf("no task")
 		c.JSON(http.StatusOK, gin.H{"code": 400, "msg": "no task"})
 		return
 	}
@@ -174,7 +174,7 @@ func ClsTaskQueue(c *gin.Context) {
 func UploadDomains(c *gin.Context) {
 
 	dsr := request.DomainScanRes{}
-	if err := c.ShouldBindJSON(dsr); err != nil {
+	if err := c.ShouldBindJSON(&dsr); err != nil {
 		zap.S().Errorf("%s", err.Error())
 		c.JSON(http.StatusOK, gin.H{"code": 400, "msg": err.Error()})
 		return

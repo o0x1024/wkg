@@ -365,6 +365,7 @@ export default defineComponent({
         if (res.data.code == 400) {
           message.error(res.data.msg)
         } else if (res.data.code == 200) {
+          queueNum.value = 0
           message.success(res.data.msg)
         }
       })

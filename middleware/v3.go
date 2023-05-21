@@ -19,7 +19,7 @@ func InputToken() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		if !strings.Contains(token, "") {
+		if !strings.Contains(token, "41f330686cbf9e21d9f092c68d032b03e24c7284") {
 			c.JSON(http.StatusForbidden, gin.H{
 				"code": 400,
 				"msg":  "认证信息错误",

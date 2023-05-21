@@ -20,6 +20,11 @@ import (
 
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
+	"gorm.io/gorm/clause"
+)
+
+var (
+	task_status = true
 )
 
 func NewTask(task *model.Task) error {
@@ -526,11 +531,15 @@ func newtask(tm *model.Task) {
 		zap.S().Errorf(err.Error())
 		return
 	}
-	ok, _ := global.Queue.Put(data)
-	if !ok {
-		zap.S().Errorf("put failed")
-		return
+	//任务状态为True时再继续Put任务到队列中
+	if task_status {
+		ok, _ := global.Queue.Put(data)
+		if !ok {
+			zap.S().Errorf("put failed")
+			return
+		}
 	}
+
 }
 
 func StopTask(taskId string) error {
@@ -655,6 +664,23 @@ func GetTaskList(query *request.Query) ([]model.Task, int, error) {
 	return tk, 0, nil
 }
 
+func CheckTaskStatus() {
+
+	tick := time.NewTicker(3 * time.Minute)
+	for {
+		select {
+		case <-tick.C:
+			queueNum := global.Queue.Quantity()
+			if queueNum > 500 {
+				task_status = false
+			} else {
+				task_status = true
+			}
+		}
+	}
+
+}
+
 func OnceInitTask() {
 	zap.S().Info("init task")
 	tk := []model.Task{}
@@ -690,7 +716,10 @@ func UploadDomains(dsr request.DomainScanRes) error {
 
 	domains := strings.Split(dsr.Domains, ",")
 
-	for _, v := range domains {
+	for i, v := range domains {
+		if v == "" && i == len(domains)-1 {
+			break
+		}
 		var count int64
 		err := db.Orm.Model(&model.Domain{}).Where("domain=?", v).Count(&count).Error
 		if err != nil {
@@ -703,10 +732,11 @@ func UploadDomains(dsr request.DomainScanRes) error {
 		dom.Domain = v
 		dom.Source = "admin"
 		dom.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
-		*dom.IsNew = true
+		new := true
+		dom.IsNew = &new
 
 		if count <= 0 {
-			err = db.Orm.Model(&model.Domain{}).Create(&dom).Error
+			err = db.Orm.Model(&model.Domain{}).Clauses(clause.Insert{Modifier: "ignore"}).Create(&dom).Error
 			if err != nil {
 				zap.S().Errorf("%s", err.Error())
 				return err
@@ -714,5 +744,6 @@ func UploadDomains(dsr request.DomainScanRes) error {
 		}
 
 	}
+
 	return nil
 }

@@ -4,9 +4,7 @@ create database wkg;
 
 use wkg;
 
-# INSERT INTO `websites` (`cid`,`favicon`,`website`,`title`,`headers`,`finger`,`screenshot`,`updateTime`) VALUES (5,'1558343002','http://mock.coding.bjf.yun.unionpay.com:80','CODING - 一站式�','','','','2021-11-18 10:50:21');
 
-# ALTER DATABASE wkg CHARACTER SET gbk COLLATE gbk;
 
 # drop table users;
 
@@ -19,7 +17,7 @@ create table
     ) default charset = gbk,
     engine = innodb;
 
-insert into users values (1, 'gelen', 'gelen');
+insert into users values (1, 'gelen', 'test','2023-5-20 09:00:00');
 
 ALTER TABLE users ADD COLUMN createTime text NOT NULL;
 
@@ -28,9 +26,8 @@ ALTER TABLE users ADD COLUMN createTime text NOT NULL;
 create table
     company (
         id int primary key not null auto_increment,
-        projectType varchar(10) not null default '-',
-        #项目类型，第三方，公益，CNVD，SRC
-        companyName text,
+        projectType varchar(10) not null default '-', #项目类型，第三方，公益，CNVD，SRC
+        companyName text UNIQUE,
         domain text,
         #待搜集的域名信息
         keyWord varchar(500) not null default '-',
@@ -45,19 +42,35 @@ create table
         lastUpdateTime varchar(20) not null default '-'
     ) default charset = gbk;
 
+
 # drop table domains;
 
 create table
     domains (
         id int primary key auto_increment,
         cid int not null,
-        domain text,
+        domain varchar(70) UNIQUE,
         type varchar(10) not null default '-',
         source text,
         remarks text,
         updateTime varchar(20) not null default '-',
         isNew bool default true
     ) default charset = gbk;
+
+alter table domains modify column domain varchar(254);
+ALTER TABLE `domains` ADD unique (`domain`);
+
+ALTER TABLE domains drop index domain;
+
+
+DELETE t1 FROM contacts t1
+        INNER JOIN
+    contacts t2 
+WHERE
+    t1.id < t2.id AND t1.email = t2.email;
+
+
+
 
 # drop table websites;
 
@@ -67,7 +80,7 @@ create table
         cid int not null,
         domain varchar(150),
         ips varchar(300),
-        website varchar(150) not null default '-',
+        website varchar(260) not null default '-' UNIQUE,
         favicon varchar(32) default '-',
         #favicon.
         faviconUrl text,
@@ -83,25 +96,34 @@ create table
         isNew bool default true
     ) default charset = gbk;
 
-use wkg;
+alter table websites modify column website varchar(260);
+ALTER TABLE websites ADD unique (website);
+
+
+DELETE t1 FROM websites t1
+        INNER JOIN
+    websites t2 
+WHERE
+    t1.id < t2.id AND t1.website = t2.website;
+
 
 create table
     notice (
         id int primary key auto_increment,
         cid int not null,
-        title varchar(256) not null,
+        title varchar(256) not null UNIQUE,
         #ipv6最长46位
         content text not null,
         updateTime varchar(20) not null
     ) default charset = gbk;
 
-drop table ips;
+-- drop table ips;
 
 create table
     ips (
         id int primary key auto_increment,
         cid int not null,
-        ip varchar(46) not null default '-',
+        ip varchar(46) not null default '-' UNIQUE,
         #ipv6最长46位
         os varchar(50) not null default '-',
         indomains varchar(3000) not null default '-',
@@ -110,6 +132,8 @@ create table
         updateTime varchar(20) not null default '-',
         isNew bool default true
     ) default charset = gbk;
+
+
 
 # drop table services;
 
@@ -132,7 +156,7 @@ create table
     apps (
         id int primary key auto_increment,
         cid int not null,
-        appname text not null,
+        appname text not null UNIQUE,
         remarks text,
         updateTime varchar(20) not null default '-',
         isNew bool default true
@@ -144,7 +168,7 @@ create table
     webchatofficeaccount (
         id int primary key auto_increment,
         cid int not null,
-        name text not null,
+        name text not null UNIQUE,
         remarks text not null,
         updateTime varchar(20) not null default '-',
         isNew bool default true
@@ -156,7 +180,7 @@ create table
     miniprogram (
         id int primary key auto_increment,
         cid int not null,
-        name text,
+        name text UNIQUE,
         remarks text,
         updateTime varchar(20) not null default '-',
         isNew bool default true
@@ -189,16 +213,16 @@ create table
         shared bool,
         hit int,
         author varchar(20),
-        tags varchar(30) not null;
-
-createTime text,
-updateTime text,
-parentId int
+        tags varchar(30) not null,
+        createTime text,
+        updateTime text,
+        parentId int
 ) default charset = gbk;
 
-ALTER TABLE knowledge ADD COLUMN author varchar(20) NOT NULL;
 
-ALTER TABLE knowledge ADD COLUMN createTime text NOT NULL;
+
+-- ALTER TABLE knowledge ADD COLUMN author varchar(20) NOT NULL;
+-- ALTER TABLE knowledge ADD COLUMN createTime text NOT NULL;
 
 # drop table category;
 
@@ -212,6 +236,9 @@ create table
     ) default charset = gbk;
 
 # drop table blackiplist;
+
+insert into category values (1, 0, '漏洞挖掘',false,'');
+
 
 create table
     blackiplist (
@@ -239,7 +266,7 @@ create table
         updateTime tinytext
     ) default charset = gbk;
 
-drop table agent;
+-- drop table agent;
 
 create table
     agent (
@@ -275,7 +302,7 @@ create table
         update_time TEXT
     ) default charset = gbk;
 
-drop table task;
+-- drop table task;
 
 create table
     task (
@@ -296,7 +323,11 @@ create table
         updateTime text
     ) default charset = gbk;
 
-drop table poc;
+
+ALTER TABLE task ADD COLUMN pocId int ;
+ALTER TABLE task ADD COLUMN pocName text ;
+
+-- drop table poc;
 
 create table
     poc (

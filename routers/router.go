@@ -70,7 +70,7 @@ func InitRouter(r *gin.Engine) {
 			companyRouter.GET("/delCompanyByCId", company.DelCompanyByCId)
 
 			companyRouter.GET("/getSelectOption", company.GetSelectOption)
-			// companyRouter.POST("/export", src.Export)
+			companyRouter.POST("/export", company.Export)
 			// companyRouter.POST("/import", src.Import)
 			// companyRouter.POST("/scan", src.Scan)
 		}
@@ -145,7 +145,7 @@ func InitRouter(r *gin.Engine) {
 
 		ipRouter := v1.Group("IPs")
 		{
-			ipRouter.POST("/getIPsInfoByCid", ip.GetIPsInfoByCid)
+			ipRouter.POST("/getIPsInfoByCId", ip.GetIPsInfoByCid)
 			ipRouter.POST("/getIPsInfo", ip.GetIPsInfo)
 			ipRouter.GET("/delIPById", ip.DelIPById)
 			ipRouter.POST("/getNewIPsInfo", ip.GetNewIPsInfo)

@@ -5,4 +5,5 @@ import "wkg/services/taskService"
 func InitService() {
 
 	taskService.OnceInitTask()
+	taskService.CheckTaskStatus()
 }

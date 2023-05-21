@@ -414,8 +414,11 @@ func GetNewDomainInfo(query *request.Query) ([]model.Domain, int64, error) {
 
 func ReadFlagDomainInfoById(ids *request.Ids) error {
 
-	id := strings.Split(ids.Id, ",")
-	for _, v := range id {
+	_ids := strings.Split(ids.Id, ",")
+	for i, v := range _ids {
+		if v == "" && i == len(_ids)-1 {
+			break
+		}
 		err := db2.Orm.Model(&model.Domain{}).Where("id=?", v).Update("isNew", false).Error
 		if err != nil {
 			return err
@@ -428,10 +431,10 @@ func GetDomainInfoByCid(query *request.Query) ([]model.Domain, int64, error) {
 	var err error
 	var count int64
 	//查询总数
-	err = db2.Orm.Model(&model.Domain{}).Where("cid=?", query.Cid).Count(&count).Error
-	if err != nil {
-		return nil, 0, err
-	}
+	// err = db2.Orm.Model(&model.Domain{}).Where("cid=?", query.Cid).Count(&count).Error
+	// if err != nil {
+	// 	return nil, 0, err
+	// }
 	//根据page和pagesize查询数据
 	var dom []model.Domain
 
@@ -441,9 +444,15 @@ func GetDomainInfoByCid(query *request.Query) ([]model.Domain, int64, error) {
 			if err != nil {
 				return nil, 0, err
 			}
+			if err = db2.Orm.Model(&model.Domain{}).Where("cid=? and isNew=true", query.Cid).Count(&count).Error; err != nil {
+				return nil, 0, err
+			}
 		} else {
 			err = db2.Orm.Model(&model.Domain{}).Limit(query.PageSize).Offset((query.Page-1)*query.PageSize).Where("cid=?", query.Cid).Find(&dom).Error
 			if err != nil {
+				return nil, 0, err
+			}
+			if err = db2.Orm.Model(&model.Domain{}).Where("cid=? and isNew=true", query.Cid).Count(&count).Error; err != nil {
 				return nil, 0, err
 			}
 		}
@@ -453,9 +462,16 @@ func GetDomainInfoByCid(query *request.Query) ([]model.Domain, int64, error) {
 			if err != nil {
 				return nil, 0, err
 			}
+			if err = db2.Orm.Model(&model.Domain{}).Where("cid=? and isNew=true", query.Cid).Count(&count).Error; err != nil {
+				return nil, 0, err
+			}
 		} else {
 			err = db2.Orm.Model(&model.Domain{}).Limit(query.PageSize).Offset((query.Page-1)*query.PageSize).Where("cid=? and isNew=true", query.Cid).Find(&dom).Error
+
 			if err != nil {
+				return nil, 0, err
+			}
+			if err = db2.Orm.Model(&model.Domain{}).Where("cid=? and isNew=true", query.Cid).Count(&count).Error; err != nil {
 				return nil, 0, err
 			}
 		}

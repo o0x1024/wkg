@@ -85,6 +85,7 @@ require (
 	github.com/spyse-com/go-spyse v1.2.3 // indirect
 	github.com/stretchr/testify v1.7.1 // indirect
 	github.com/syndtr/goleveldb v1.0.0 // indirect
+	github.com/tealeg/xlsx v1.0.5
 	github.com/tomnomnom/linkheader v0.0.0-20180905144013-02ca5825eb80 // indirect
 	github.com/ugorji/go/codec v1.1.7 // indirect
 	go.uber.org/atomic v1.9.0 // indirect

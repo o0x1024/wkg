@@ -1,21 +1,28 @@
 <template>
     <div class="treeGlobal">
         <a-row :gutter="20">
-            <a-col class="oneCol"  :xs="{ span: 15, offset: 0 }"  :lg="{ span: 4, offset: 0 }">
-                <a-row justify="start">
-                    <a-col :span="24">
+            <a-col  :xs="{ span: 16, offset: 0 }" :lg="{ span: 4, offset: 0 }">
+                <a-row >
+                    <a-col :span="20">
                         <a-input-search v-model:value="searchValue" placeholder="Search">
                             <template #enterButton>
                                 <redo-outlined @click="OnFlush" />
                             </template>
                         </a-input-search>
                     </a-col>
+                    <a-col :span="4">
+                        <a-button type="primary" size="size" @click="onAddRoot">
+                            <template #icon>
+                                <plus-outlined />
+                            </template>
+                        </a-button>
+                    </a-col>
                 </a-row>
                 <a-row>
                     <a-col>
                         <a-tree v-model:expandedKeys="expandedKeys" v-model:selectedKeys="selectedKeys"
                             :auto-expand-parent="autoExpandParent" :show-icon="true" blockNode :tree-data="tdList.list"
-                            style="padding-top: 10px;" @expand="Onexpand" @select="onSelect">
+                            style="margin-top: 10px; min-width: 400px;" @expand="Onexpand" @select="onSelect">
 
                             <template #title="{ isLeaf, id, key: key, title }">
                                 <a-dropdown :trigger="['contextmenu']">
@@ -65,7 +72,7 @@
                 </a-row>
             </a-col>
             <!-- <a-col :span="1"></a-col> -->
-            <a-col class="twoCol"  :xs="{ span: 0, offset: 0 }"  :lg="{ span: 18, offset: 0 }">
+            <a-col class="twoCol" :xs="{ span: 0, offset: 0 }" :lg="{ span: 18, offset: 0 }">
                 <a-row>
                     <a-col v-if="showInit" :span="24">
                         <!-- <a-row>
@@ -99,7 +106,7 @@
                 </a-row>
                 <!-- 第一行做为工具栏显示 -->
                 <a-row :gutter="16">
-                    <a-col v-if="showEdit" :xs="{ span: 24, offset: 0 }"  :lg="{ span: 24, offset: 0 }">
+                    <a-col v-if="showEdit" :xs="{ span: 24, offset: 0 }" :lg="{ span: 24, offset: 0 }">
                         <a-row :gutter="16">
                             <a-col>
                                 <a-button @click="OnSave" type="primary">保存</a-button>
@@ -121,7 +128,7 @@
                         </a-row>
 
                         <a-row>
-                            <a-col :xs="{ span: 24, offset: 0 }"  :lg="{ span: 24, offset: 0 }">
+                            <a-col :xs="{ span: 24, offset: 0 }" :lg="{ span: 24, offset: 0 }">
                                 <div>
                                     <md-editor style="padding: 10px;height:600px" v-model="MdEdit.content"
                                         :showCodeRowNumber="true" @onUploadImg="onUploadImg" preview-theme="default" />
@@ -247,7 +254,7 @@ interface HeadList {
 
 import { defineComponent, ref, onMounted, reactive, watch, computed, h, } from "vue";
 import knowledgeService from "../../service/knowledge.service";
-import { FileAddOutlined, ClockCircleOutlined, RedoOutlined, FolderFilled, FileTextFilled, FolderOpenFilled } from "@ant-design/icons-vue";
+import { FileAddOutlined, ClockCircleOutlined, RedoOutlined, FolderFilled, FileTextFilled, FolderOpenFilled,PlusOutlined } from "@ant-design/icons-vue";
 
 import { message, notification, Button } from "ant-design-vue";
 import MdEditor from 'md-editor-v3';
@@ -261,6 +268,7 @@ const { toClipboard } = useClipboard()
 export default defineComponent({
     components: {
         FolderFilled,
+        PlusOutlined,
         FolderOpenFilled,
         FileTextFilled,
         Catelog,
@@ -308,6 +316,13 @@ export default defineComponent({
             showAddNodeModel: false,
             ShowRootNodeModel: false,
         })
+
+
+        
+        const onAddRoot = () => {
+            modelOption.ShowRootNodeModel = true
+
+        };
 
 
         const OnNewKnowledge = (isLeaf: boolean, _parentid: number) => {
@@ -527,10 +542,10 @@ export default defineComponent({
             // console.log(kwge)
             MdEdit.title = kwge.value.title
             MdEdit.content = kwge.value.content
-            if (kwge.value.tags ){
+            if (kwge.value.tags) {
                 seleteTags.value = kwge.value.tags
             }
-           
+
         };
 
 
@@ -819,6 +834,7 @@ export default defineComponent({
             MdEdit,
             Editing,
             onClickTimeLine,
+            onAddRoot,
             onUploadImg,
             OnModifyClick,
             viewOnly,

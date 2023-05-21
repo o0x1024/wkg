@@ -70,7 +70,7 @@
             </a-button>
         </a-col>
         <a-col>
-            <a-radio-group v-model:value="assetOption">
+            <a-radio-group v-model:value="assetOption" @change="onRadioChange()">
                 <a-radio-button value="0">全部</a-radio-button>
                 <a-radio-button value="1">新增</a-radio-button>
             </a-radio-group>
@@ -419,6 +419,11 @@ export default defineComponent({
             })
         }
 
+        const onRadioChange = () => {
+            console.log(1111)
+            UpdateData()
+        }
+
         const UpdateData = () => {
             switch (activeKey.value) {
                 case '1'://域名
@@ -518,6 +523,7 @@ export default defineComponent({
             InputSelectVal,
             IPsList,
             ServiceList,
+            onRadioChange,
             MiniProgramList,
             NewsList,
             InputSelectOptions,

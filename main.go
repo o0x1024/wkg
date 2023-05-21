@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -49,6 +50,7 @@ func main() {
 
 	r.Static("img", "upload/img")
 
+	fmt.Println("[+] wkg running")
 	routers.InitRouter(r)
 	if err := r.Run(addr); err != nil {
 		zap.S().Errorf(err.Error())

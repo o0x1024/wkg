@@ -8,21 +8,9 @@ import (
 )
 
 func EnvCheck() {
-	exitst, err := fileOp.PathExists("./conf/subfinder.yaml")
-	if err != nil {
-		zap.S().Error("%s", err.Error())
-		return
-	}
-	if !exitst {
-		zap.S().Error("./conf/subfinder.yaml not found.")
-		return
-	}
+	var err error
 
-	ex, err := fileOp.PathExists("log")
-	if err != nil {
-		zap.S().Errorf("%s", err.Error())
-	}
-	if !ex {
+	if !fileOp.PathExists("log") {
 		err = os.MkdirAll("log", os.ModePerm)
 		if err != nil {
 			zap.S().Errorf("%s", err.Error())
@@ -30,12 +18,7 @@ func EnvCheck() {
 		}
 	}
 
-	ex, err = fileOp.PathExists("tmp")
-	if err != nil {
-		zap.S().Errorf("%s", err.Error())
-		return
-	}
-	if !ex {
+	if !fileOp.PathExists("tmp") {
 		err = os.MkdirAll("tmp", os.ModePerm)
 		if err != nil {
 			zap.S().Errorf("%s", err.Error())
@@ -44,12 +27,7 @@ func EnvCheck() {
 
 	}
 
-	ex, err = fileOp.PathExists("upload/img")
-	if err != nil {
-		zap.S().Errorf("%s", err.Error())
-		return
-	}
-	if !ex {
+	if !fileOp.PathExists("upload/img") {
 		err = os.MkdirAll("upload/img", os.ModePerm)
 		if err != nil {
 			zap.S().Errorf("%s", err.Error())

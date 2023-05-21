@@ -17,6 +17,7 @@ import (
 
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
+	"gorm.io/gorm/clause"
 )
 
 //https://user.95516.com/favicon.ico
@@ -396,7 +397,7 @@ func ScanNewWebsiteInfo() error {
 							}
 
 							if count == 0 {
-								err = db2.Orm.Model(&model.Ips{}).Create(&tip).Error
+								err = db2.Orm.Model(&model.Ips{}).Clauses(clause.Insert{Modifier: "ignore"}).Create(&tip).Error
 								if err != nil {
 									zap.S().Errorf("%s", err.Error())
 									return
@@ -410,7 +411,7 @@ func ScanNewWebsiteInfo() error {
 				website.Ips = ips[0]
 
 				var count int64 = 0
-				err = db2.Orm.Model(&model.Websites{}).Where("website=?", website.Website).Count(&count).Error
+				err = db2.Orm.Model(&model.Websites{}).Clauses(clause.Insert{Modifier: "ignore"}).Where("website=?", website.Website).Count(&count).Error
 				if err != nil {
 					zap.S().Errorf("%s", err.Error())
 					return
@@ -666,9 +667,12 @@ func getFaviconHash(rooturl string) (string, string, error) {
 }
 
 func ReadFlagWebSitefoById(cid *request.ParamIds) error {
-	id := strings.Split(cid.Id, ",")
+	ids := strings.Split(cid.Id, ",")
 
-	for _, v := range id {
+	for i, v := range ids {
+		if v == "" && i == len(ids)-1 {
+			break
+		}
 		err := db2.Orm.Model(&model.Websites{}).Where("id=?", v).Update("isNew", false).Error
 		if err != nil {
 
